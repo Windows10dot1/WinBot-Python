@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import json
 from discord.ext import commands
@@ -13,14 +14,25 @@ CurrentLanguage = en
 #### Pizerria Variables Setup ####
 PizzeriaData = ""
 
-@bot.event
-async def on_ready():
+async def OpenPizzeriaJson() -> str:
     global PizzeriaData
     try:
+        PizzeriaJson = open('Pizzerias.json')
+        PizzeriaData = json.load(PizzeriaJson)
+    except FileNotFoundError:
+        await CreatePizzeriasJson()
+    return PizzeriaData
+
+async def CreatePizzeriasJson():
+    try:
         PizzeriaJson = open('Pizzerias.json', 'r+')
+        PizzeriaJson.close()
     except:
         PizzeriaJson = open('Pizzerias.json', 'w')
-    
+        PizzeriaJson.close()
+@bot.event
+async def on_ready():
+    await CreatePizzeriasJson()
 @bot.command()
 #### Language Commands ####
 async def ListLanguages(ctx):
@@ -36,30 +48,65 @@ async def ChangeLanguage(ctx, Language):
         await ctx.send("Language doesn't exists")
 #### Pizza Game #### 
 @bot.command()
+#### User's Pizzeria Information ####
 async def Pizzeria(ctx):
     global PizzeriaData
-    for PizzeriaInfo in PizzeriaData:
-        if ctx.author.name == PizzeriaInfo['PizzeriaName']:
-            print("c")
-            await ctx.send(CurrentLanguage[0] + PizzeriaInfo['PizzeriaName']+  " " + 
-                           CurrentLanguage[1] + str(PizzeriaInfo['PizzeriaLevel']) + " " + 
-                           CurrentLanguage[2] + str(PizzeriaInfo['PizzeriaPizzas']))
-        if ctx.author.name not in PizzeriaInfo['PizzeriaName']:
+    PizzeriaFound = False
+    try:
+        PizzeriaData = await OpenPizzeriaJson()
+        for PizzeriaInfo in PizzeriaData:
+            if ctx.author.name == PizzeriaInfo['PizzeriaName']:
+                PizzeriaFound = True
+                await ctx.send(CurrentLanguage[0] + PizzeriaInfo['PizzeriaName']+  " " + 
+                                CurrentLanguage[1] + str(PizzeriaInfo['PizzeriaLevel']) + " " + 
+                                CurrentLanguage[2] + str(PizzeriaInfo['PizzeriaPizzas']))
+                break
+        if PizzeriaFound != True:
             await ctx.send(CurrentLanguage[3])
-            print("d")
-
+    except:
+        await ctx.send(CurrentLanguage[3])
+#### Create New Pizzeria ####
 @bot.command()
 async def CreatePizzeria(ctx):
     global PizzeriaData
+    PizzeriaFound = False
+    try:
+        PizzeriaData = await OpenPizzeriaJson()
+        for PizzeriaInfo in PizzeriaData:
+            if ctx.author.name == PizzeriaInfo['PizzeriaName']:
+                await ctx.send(CurrentLanguage[4])
+                PizzeriaFound = True
+                break
+        if PizzeriaFound != True:
+            PizzeriaInitData = {'PizzeriaName': ctx.author.name,
+                                'PizzeriaLevel': 0,
+                                'PizzeriaPizzas': 0}
+            with open('Pizzerias.json', 'r', encoding='utf8') as PizzeriasJson:
+                TempJson = json.load(PizzeriasJson)
+                TempJson.append(PizzeriaInitData)
+                with open('Pizzerias.json', 'w', encoding='utf8') as Pizzerias:
+                    json.dump(TempJson, Pizzerias, ensure_ascii=False, indent=4, separators=(",", ": "))
+                    PizzeriasJson.close()
+                    Pizzerias.close()
+    except:
+        with open('Pizzerias.json', 'r+', encoding='utf8') as PizzeriasJson:
+            PizzeriaInitData = [{'PizzeriaName': ctx.author.name,
+                                'PizzeriaLevel': 0,
+                                'PizzeriaPizzas': 0}]
+            json.dump(PizzeriaInitData, PizzeriasJson, ensure_ascii=False, indent=4, separators=(',', ': '))
+            PizzeriasJson.close()
+#### Cook Pizza ####
+@bot.command()
+async def FireupPizzas(ctx, PizzaCount):
+    global PizzeriaData
+    PizzeriaFound = False
+    PizzeriaData = await OpenPizzeriaJson()
     for PizzeriaInfo in PizzeriaData:
         if ctx.author.name == PizzeriaInfo['PizzeriaName']:
-            await ctx.send(CurrentLanguage[4])
-            print("a")
-        else:
-            PizzeriaStartData = [{'PizzeriaName': ctx.author.name,
-                            'PizzeriaLevel': 0,
-                            'PizzeriaPizzas': 0}]
-            print("b")
-            with open('Pizzerias.json', 'a', encoding='utf8') as PizzeriasJson:
-                json.dump(PizzeriaStartData, PizzeriasJson, ensure_ascii=False)
-bot.run('token')
+            await asyncio.sleep(1*int(PizzaCount))
+            TempPizzaCount = PizzeriaInfo['PizzeriaPizzas']
+            TempPizzaCount = TempPizzaCount + int(PizzaCount)
+            PizzeriaInfo['PizzeriaPizzas'] = TempPizzaCount
+            with open('Pizzerias.json', 'r+') as PizzeriasJson:
+                json.dump(PizzeriaInfo, PizzeriasJson, ensure_ascii=False, indent=4, separators=(',', ': '))
+bot.run('OTQ5MDU4MzMyMzM1OTQ3ODY3.GUYOSA.kiEJ020VBCRvuBFPayUJAdjNjldDzgo6q6rPDM')
