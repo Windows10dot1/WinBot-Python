@@ -109,4 +109,4 @@ async def FireupPizzas(ctx, PizzaCount):
             PizzeriaInfo['PizzeriaPizzas'] = TempPizzaCount
             with open('Pizzerias.json', 'r+') as PizzeriasJson:
                 json.dump(PizzeriaInfo, PizzeriasJson, ensure_ascii=False, indent=4, separators=(',', ': '))
-bot.run('OTQ5MDU4MzMyMzM1OTQ3ODY3.GUYOSA.kiEJ020VBCRvuBFPayUJAdjNjldDzgo6q6rPDM')
+bot.run('token')
