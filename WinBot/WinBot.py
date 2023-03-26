@@ -154,7 +154,5 @@ async def SellPizzas(ctx, PizzaCount):
     except Exception as e :
         await ctx.send(e)
         await ctx.send(CurrentLanguage[5])
-
-bot.help_command=MyHelpCommand()
 #### Start Bot ####
-bot.run('token')
+bot.run('OTQ5MDU4MzMyMzM1OTQ3ODY3.GpL2Qe.GnczoLsNJfhOfvVAzInag00uHxRkTur-zCEoDM')
