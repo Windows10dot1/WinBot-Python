@@ -157,4 +157,4 @@ async def SellPizzas(ctx, PizzaCount):
 
 bot.help_command=MyHelpCommand()
 #### Start Bot ####
-bot.run('OTQ5MDU4MzMyMzM1OTQ3ODY3.GpdJyu.6zQqRvcLmeN_OJOpdkuFCOQcFwKMRuCuwO-vEk')
+bot.run('token')
