@@ -35,9 +35,7 @@ async def CreatePizzeriasJson():
 @bot.event
 async def on_ready():
     await CreatePizzeriasJson()
-
-
-#### Language Commands ####
+#### #### Language Commands #### ####
 @bot.command()
 async def ListLanguages(ctx):
     for Langs in Languages:
@@ -157,5 +155,6 @@ async def SellPizzas(ctx, PizzaCount):
         await ctx.send(e)
         await ctx.send(CurrentLanguage[5])
 
+bot.help_command=MyHelpCommand()
 #### Start Bot ####
-bot.run('token')
+bot.run('OTQ5MDU4MzMyMzM1OTQ3ODY3.GpdJyu.6zQqRvcLmeN_OJOpdkuFCOQcFwKMRuCuwO-vEk')
